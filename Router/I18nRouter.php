@@ -57,6 +57,13 @@ class I18nRouter extends Router
     {
         call_user_func_array(array('Symfony\Bundle\FrameworkBundle\Routing\Router', '__construct'), func_get_args());
         $this->container = func_get_arg(0);
+
+        // In Symfony 7.4.0 and higher, '%kernel.default_locale%' is preset in the context:
+        //  https://github.com/symfony/symfony/pull/62010/files#diff-b6ca85f6f5bd55d0dac9b089a0e1171e158d05076dd13de01cc661357267df74R174
+        // This breaks the I18nRouter behavior, so we unset it here to keep the old behavior
+        if ($this->context->hasParameter('_locale')) {
+            $this->context->setParameter('_locale', null);
+        }
     }
 
     public function setLocaleResolver(LocaleResolverInterface $resolver)
